@@ -5,8 +5,8 @@ Node* Ai::GetNotBlockedNode()
 	while (true) {
 		int randomRow = GetRandomValue(0, ROWS - 1);
 		int randomCol = GetRandomValue(0, COLS - 1);
-		if (!grid[randomRow][randomCol].blocked) {
-			return &grid[randomRow][randomCol];
+		if (!grid1[randomRow][randomCol].blocked) {
+			return &grid1[randomRow][randomCol];
 		}
 	}
 
@@ -15,9 +15,9 @@ Node* Ai::GetNotBlockedNode()
 void Ai::Main()
 {
 
-	Start();
-	SetTargetFPS(20);
+	SetTargetFPS(30);
 	InitWindow(screenWidth, screenHeight, "AI Path Finding");
+	Start();
 	while (!WindowShouldClose())
 	{
 		Interaction();
@@ -36,36 +36,113 @@ void Ai::Main()
 
 void Ai::Start()
 {
+
 	for (int row = 0; row < ROWS; row++)
 	{
-		std::vector<Node> gridRow;
+		std::vector<Node> gridRow1;
+
 		float valY = row * NODE_SIZE;
 		for (int col = 0; col < COLS; col++)
 		{
 			float valX = col * NODE_SIZE;
-			Node node(row, col, { valX,valY }, { NODE_SIZE,NODE_SIZE });
-			gridRow.push_back(node);
-
-
+			Node node1(row, col, { valX + GAP,valY + GAP }, { NODE_SIZE,NODE_SIZE });
+			gridRow1.push_back(node1);
 		}
-		grid.push_back(gridRow);
+		grid1.push_back(gridRow1);
+
 	}
 	SetUpGame();
 }
 
 void Ai::Update()
 {
-	if (!pathFound)
-		RandomSearch(start, end);
-	for (auto& gridRow : grid) {
-		for (Node& node : gridRow) {
-			node.visited = false;
+	float dt = GetFrameTime();
+
+	if (animateBFSVisited && bfsVisitedIndex < bfsVisited.size())
+	{
+		bfsTimer += GetFrameTime();
+
+		if (bfsTimer >= revealDelay)
+		{
+			Node* node = bfsVisited[bfsVisitedIndex];
+			if (!node->paint) {
+
+				node->paint = true;
+				node->fillColor = Color{ 200,200,0,100 };
+				node->scale = 0;
+				node->animating = true;
+			}
+			bfsVisitedIndex++;
+			bfsTimer = 0.0f;
+
+			if (bfsVisitedIndex >= bfsVisited.size())
+			{
+				animateBFSVisited = false;
+				animateBFS = true;
+			}
+		}
+	}
+	if (animateBFS && bfsIndex > 0)
+	{
+		bfsTimer += dt;
+		if (bfsTimer >= revealDelay)
+		{
+			Node* node = bfsPath[bfsIndex];
+			node->paint = true;
+			node->fillColor = bfsColor;
+			bfsIndex--;
+			bfsTimer = 0.0f;
+			if (bfsIndex <= 0)
+				animateBFS = false;
+		}
+	}
+	if (animateDFSVisited && dfsVisitedIndex < dfsVisited.size())
+	{
+		dfsTimer += GetFrameTime();
+
+		if (dfsTimer >= revealDelay)
+		{
+			Node* node = dfsVisited[dfsVisitedIndex];
+			if (!node->paint) {
+
+				node->paint = true;
+				node->fillColor = Color{ 200,200,0,100 };
+				node->scale = 0;
+				node->animating = true;
+			}
+			dfsVisitedIndex++;
+			dfsTimer = 0.0f;
+
+			if (dfsVisitedIndex >= dfsVisited.size())
+			{
+				animateDFSVisited = false;
+				animateDFS = true;
+			}
+		}
+	}
+	if (animateDFS && dfsIndex > 0)
+	{
+		dfsTimer += dt;
+		if (dfsTimer >= revealDelay)
+		{
+			Node* node = dfsPath[dfsIndex];
+			node->paint = true;
+			node->fillColor = Color{ 200,0,0,100 };;
+			dfsIndex--;
+			dfsTimer = 0.0f;
+
+			if (dfsIndex <= 0)
+				animateDFS = false;
 		}
 	}
 }
 void Ai::Draw()
 {
-	for (auto& gridRow : grid) {
+	for (auto& gridRow : grid1) {
+		for (Node& node : gridRow) {
+			node.Draw();
+		}
+	}for (auto& gridRow : grid2) {
 		for (Node& node : gridRow) {
 			node.Draw();
 		}
@@ -76,14 +153,43 @@ void Ai::Interaction()
 	if (IsKeyPressed(KEY_R)) {
 		Restart();
 	}
+	if (IsKeyPressed(KEY_S)) {
+		RandomSearch(start1, end1);
+	}
+	if (IsKeyPressed(KEY_D)) {
+		BFS(start1, end1);
+		DFS(start2, end2);
+		bfsIndex = bfsPath.size() - 1;
+		bfsVisitedIndex = 0;
+		bfsTimer = 0;
+		animateBFS = false;
+		animateBFSVisited = true;
+		dfsIndex = dfsPath.size() - 1;
+		dfsVisitedIndex = 0;
+		dfsTimer = 0;
+		animateDFS = false;
+		animateDFSVisited = true;
+	}
+
 }
 void Ai::Restart()
 {
-	for (auto& gridRow : grid) {
+	for (auto& gridRow : grid1) {
 		for (Node& node : gridRow) {
 			node.Reset();
 		}
 	}
+	grid2.clear();
+	bfsVisited.clear();
+	bfsPath.clear();
+	dfsPath.clear();
+	dfsVisited.clear();
+	bfsIndex = 0;
+	bfsVisitedIndex = 0;
+	dfsIndex = 0;
+	dfsVisitedIndex = 0;
+	start2 = nullptr;
+	end2 = nullptr;
 	SetUpGame();
 
 }
@@ -94,23 +200,46 @@ void Ai::SetUpGame()
 	for (int i = 0; i < ROWS * COLS * 0.2; i++) {
 		GetNotBlockedNode()->blocked = true;
 	}
-	start = GetNotBlockedNode();
-	start->blocked = true;
-	start->displayText = "S";
-	start->fillColor = BLUE;
-	start->visited = true;
-	end = GetNotBlockedNode();
-	end->displayText = "E";
-	end->fillColor = BLUE;
-	end->paint = true;
-
+	start1 = GetNotBlockedNode();
+	start1->paint = true;
+	start1->displayText = "S";
+	start1->fillColor = BLUE;
+	start1->visited = true;
+	end1 = GetNotBlockedNode();
+	end1->displayText = "E";
+	end1->paint = true;
+	end1->fillColor = BLUE;
+	end1->paint = true;
+	for (int i = 0; i < grid1.size(); i++)
+	{
+		std::vector<Node> row;
+		for (int j = 0; j < grid1[i].size(); j++) {
+			Node node = grid1[i][j];
+			node.position.y = node.position.y + NODE_SIZE * ROWS + GAP;
+			row.push_back(node);
+		}
+		grid2.push_back(row);
+	}
+	for (auto& gridRow : grid2) {
+		for (Node& node : gridRow)
+		{
+			if (start2 == nullptr && (start1->row == node.row && start1->col == node.col)) {
+				start2 = &node;
+				continue;
+			}
+			if (end2 == nullptr && (end1->row == node.row && end1->col == node.col)) {
+				end2 = &node;
+				continue;
+			}
+		}
+	}
 }
 
 void Ai::SetHotSpot()
 {
 	Node* hotSpot = GetNotBlockedNode();
 	hotSpot->outlineColor = RED;
-	std::vector<Node*> neighbours = GetNeighbours(hotSpot);
+	std::vector<Node*> neighbours = GetNeighbours(hotSpot, grid1);
 	for (Node* neighbour : neighbours) {
 		if (!neighbour->blocked) {
 			neighbour->outlineColor = ORANGE;
@@ -119,7 +248,7 @@ void Ai::SetHotSpot()
 	}
 }
 
-std::vector<Node*> Ai::GetNeighbours(Node* node)
+std::vector<Node*> Ai::GetNeighbours(Node* node, std::vector<std::vector<Node>>& grid)
 {
 	std::vector<Node*> neighbours;
 	auto isValid = [&](int row, int col) {
@@ -141,6 +270,8 @@ std::vector<Node*> Ai::GetNeighbours(Node* node)
 	return neighbours;
 }
 
+
+
 void Ai::RandomSearch(Node* startNode, Node* endNode)
 {
 
@@ -148,7 +279,7 @@ void Ai::RandomSearch(Node* startNode, Node* endNode)
 	path.push_back(startNode);
 	Color color = Color{ (unsigned char)GetRandomValue(100, 255), (unsigned char)GetRandomValue(100, 255), (unsigned char)GetRandomValue(100, 255), 255 };
 	while (true) {
-		std::vector<Node*> neighbours = GetNeighbours(path.back());
+		std::vector<Node*> neighbours = GetNeighbours(path.back(), grid1);
 		for (int i = 0; i < neighbours.size(); i++)
 		{
 			if (neighbours[i] == endNode) {

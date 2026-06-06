@@ -2,18 +2,21 @@
 #pragma once
 #include "Node.h"
 #include "raylib.h"
+#include <time.h>
 #include <vector>
 class Ai
 {
 public:
-#define ROWS 20
-#define COLS 40
-#define NODE_SIZE 25
-	static const int screenWidth = COLS * NODE_SIZE;
-	static const int screenHeight = ROWS * NODE_SIZE;
-	std::vector<std::vector<Node>> grid;
-	Node* start, * end;
-	int stepCount = 0;
+#define ROWS 10
+#define COLS 20
+#define NODE_SIZE 50
+#define GAP 10
+	static const int screenWidth = (2*GAP) + COLS * NODE_SIZE;
+	static const int screenHeight =(3*GAP) + ROWS * NODE_SIZE * 2;
+	std::vector<std::vector<Node>> grid1;
+	std::vector<std::vector<Node>> grid2 = {};
+	Node* start1, * end1;
+	Node* start2, * end2;
 	bool pathFound = false;
 	Node* GetNotBlockedNode();
 	void Main();
@@ -24,14 +27,31 @@ public:
 	void Restart();
 	void SetUpGame();
 	void SetHotSpot();
-	std::vector<Node*> GetNeighbours(Node* node);
-
-	void BFS(Node* startNode, Node* endNode);
-	void DFS(Node* startNode, Node* endNode);
+	std::vector<Node*> GetNeighbours(Node* node, std::vector<std::vector<Node>>& grid);
+	float revealDelay = 0.05f;
+	bool BFS(Node* startNode, Node* endNode);
+	std::vector<Node*> bfsPath;
+	std::vector<Node*> bfsVisited;
+	Color bfsColor;
+	int bfsIndex = 0;
+	int bfsVisitedIndex = 0;
+	bool animateBFS = false;
+	bool animateBFSVisited = false;
+	float bfsTimer = 0.0f;
+	bool DFS(Node* startNode, Node* endNode);
+	std::vector<Node*> dfsPath;
+	std::vector<Node*> dfsVisited;
+	Color dfsColor;
+	int dfsIndex = 0;
+	int dfsVisitedIndex = 0;
+	bool animateDFS = false;
+	bool animateDFSVisited = false;
+	float dfsTimer = 0.0f;
 	void Djikstre(Node* startNode, Node* endNode);
 	void AStar(Node* startNode, Node* endNode);
 
 	void RandomSearch(Node* startNode, Node* endNode);
+
 
 private:
 
