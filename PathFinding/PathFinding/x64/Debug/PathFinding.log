@@ -1,1 +1,32 @@
-﻿
+﻿  Ai.cpp
+C:\Users\juanc\Documents\GitHub\PathFinding\PathFinding\PathFinding\Node.h(27,58): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  (compiling source file 'Ai.cpp')
+  
+C:\Users\juanc\Documents\GitHub\PathFinding\PathFinding\PathFinding\Node.h(27,50): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  (compiling source file 'Ai.cpp')
+  
+C:\Users\juanc\Documents\GitHub\PathFinding\PathFinding\PathFinding\Node.h(27,42): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  (compiling source file 'Ai.cpp')
+  
+C:\Users\juanc\Documents\GitHub\PathFinding\PathFinding\PathFinding\Node.h(27,30): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  (compiling source file 'Ai.cpp')
+  
+C:\Users\juanc\Documents\GitHub\PathFinding\PathFinding\PathFinding\Node.h(71,18): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+  (compiling source file 'Ai.cpp')
+  
+C:\Users\juanc\Documents\GitHub\PathFinding\PathFinding\PathFinding\Node.h(79,61): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  (compiling source file 'Ai.cpp')
+  
+C:\Users\juanc\Documents\GitHub\PathFinding\PathFinding\PathFinding\Node.h(79,45): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  (compiling source file 'Ai.cpp')
+  
+C:\Users\juanc\Documents\GitHub\PathFinding\PathFinding\PathFinding\Ai.cpp(44,14): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\juanc\Documents\GitHub\PathFinding\PathFinding\PathFinding\Ai.cpp(47,15): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\juanc\Documents\GitHub\PathFinding\PathFinding\PathFinding\Ai.cpp(240,29): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\juanc\Documents\GitHub\PathFinding\PathFinding\PathFinding\Ai.cpp(245,29): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\juanc\Documents\GitHub\PathFinding\PathFinding\PathFinding\Ai.cpp(254,39): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\juanc\Documents\GitHub\PathFinding\PathFinding\PathFinding\Ai.cpp(259,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\juanc\Documents\GitHub\PathFinding\PathFinding\PathFinding\Ai.cpp(268,39): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\juanc\Documents\GitHub\PathFinding\PathFinding\PathFinding\Ai.cpp(273,29): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\juanc\Documents\GitHub\PathFinding\PathFinding\PathFinding\Ai.cpp(427,51): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  PathFinding.vcxproj -> C:\Users\juanc\Documents\GitHub\PathFinding\PathFinding\x64\Debug\PathFinding.exe

@@ -127,12 +127,90 @@ void Ai::Update()
 		{
 			Node* node = dfsPath[dfsIndex];
 			node->paint = true;
-			node->fillColor = Color{ 200,0,0,100 };;
+			node->fillColor = dfsColor;
 			dfsIndex--;
 			dfsTimer = 0.0f;
 
 			if (dfsIndex <= 0)
 				animateDFS = false;
+		}
+	}
+	if (animateDjikstraVisited && djikstraVisitedIndex < djikstraVisited.size())
+	{
+		djikstraTimer += GetFrameTime();
+
+		if (djikstraTimer >= revealDelay)
+		{
+			Node* node = djikstraVisited[djikstraVisitedIndex];
+			if (!node->paint) {
+
+				node->paint = true;
+				node->fillColor = Color{ 200,200,0,100 };
+				node->scale = 0;
+				node->animating = true;
+			}
+			djikstraVisitedIndex++;
+			djikstraTimer = 0.0f;
+
+			if (djikstraVisitedIndex >= djikstraVisited.size())
+			{
+				animateDjikstraVisited = false;
+				animateDjikstra = true;
+			}
+		}
+	}
+	if (animateDjikstra && djikstraIndex > 0)
+	{
+		djikstraTimer += dt;
+		if (djikstraTimer >= revealDelay)
+		{
+			Node* node = djikstraPath[djikstraIndex];
+			node->paint = true;
+			node->fillColor = djikstraColor;
+			djikstraIndex--;
+			djikstraTimer = 0.0f;
+
+			if (djikstraIndex <= 0)
+				animateDjikstra = false;
+		}
+	}
+	if (animateAStarVisited && aStarVisitedIndex < aStarVisited.size())
+	{
+		aStarTimer += GetFrameTime();
+
+		if (aStarTimer >= revealDelay)
+		{
+			Node* node = aStarVisited[aStarVisitedIndex];
+			if (!node->paint) {
+
+				node->paint = true;
+				node->fillColor = Color{ 200,200,0,100 };
+				node->scale = 0;
+				node->animating = true;
+			}
+			aStarVisitedIndex++;
+			aStarTimer = 0.0f;
+
+			if (aStarVisitedIndex >= aStarVisited.size())
+			{
+				animateAStarVisited = false;
+				animateAStar = true;
+			}
+		}
+	}
+	if (animateAStar && aStarIndex > 0)
+	{
+		aStarTimer += dt;
+		if (aStarTimer >= revealDelay)
+		{
+			Node* node = aStarPath[aStarIndex];
+			node->paint = true;
+			node->fillColor = aStarColor;
+			aStarIndex--;
+			aStarTimer = 0.0f;
+
+			if (aStarIndex <= 0)
+				animateAStar = false;
 		}
 	}
 }
@@ -170,7 +248,34 @@ void Ai::Interaction()
 		animateDFS = false;
 		animateDFSVisited = true;
 	}
-
+	if (IsKeyPressed(KEY_J)) {
+		Djikstra(start1, end1);
+		AStar(start2, end2);
+		djikstraIndex = djikstraPath.size() - 1;
+		djikstraTimer = 0;
+		djikstraVisitedIndex = 0;
+		animateDjikstra = false;
+		animateDjikstraVisited = true;
+		aStarIndex = aStarPath.size() - 1;
+		aStarVisitedIndex = 0;
+		aStarTimer = 0;
+		animateAStar = false;
+		animateAStarVisited = true;
+	}
+	if (IsKeyPressed(KEY_O)) {
+		Djikstra(start1, end1);
+		BFS(start2, end2);
+		djikstraIndex = djikstraPath.size() - 1;
+		djikstraTimer = 0;
+		djikstraVisitedIndex = 0;
+		animateDjikstra = false;
+		animateDjikstraVisited = true;
+		bfsIndex = bfsPath.size() - 1;
+		bfsVisitedIndex = 0;
+		bfsTimer = 0;
+		animateBFS = false;
+		animateBFSVisited = true;
+	}
 }
 void Ai::Restart()
 {
@@ -180,16 +285,25 @@ void Ai::Restart()
 		}
 	}
 	grid2.clear();
-	bfsVisited.clear();
-	bfsPath.clear();
-	dfsPath.clear();
-	dfsVisited.clear();
 	bfsIndex = 0;
 	bfsVisitedIndex = 0;
 	dfsIndex = 0;
 	dfsVisitedIndex = 0;
+	djikstraIndex = 0;
+	djikstraVisitedIndex = 0;
+	aStarIndex = 0;
+	aStarVisitedIndex = 0;
 	start2 = nullptr;
 	end2 = nullptr;
+	animateBFS = false;
+	animateBFSVisited = false;
+	animateDFS = false;
+	animateDFSVisited = false;
+	animateDjikstra = false;
+	animateDjikstraVisited = false;
+	animateAStar = false;
+	animateAStarVisited = false;
+
 	SetUpGame();
 
 }
@@ -197,7 +311,7 @@ void Ai::Restart()
 void Ai::SetUpGame()
 {
 	pathFound = false;
-	for (int i = 0; i < ROWS * COLS * 0.2; i++) {
+	for (int i = 0; i < ROWS * COLS *0; i++) {
 		GetNotBlockedNode()->blocked = true;
 	}
 	start1 = GetNotBlockedNode();
@@ -210,6 +324,11 @@ void Ai::SetUpGame()
 	end1->paint = true;
 	end1->fillColor = BLUE;
 	end1->paint = true;
+	SetHotSpot();
+	SetHotSpot();
+	SetHotSpot();
+	SetHotSpot();
+	SetHotSpot();
 	for (int i = 0; i < grid1.size(); i++)
 	{
 		std::vector<Node> row;
@@ -238,11 +357,15 @@ void Ai::SetUpGame()
 void Ai::SetHotSpot()
 {
 	Node* hotSpot = GetNotBlockedNode();
-	hotSpot->outlineColor = RED;
+	hotSpot->fillColor = RED;
+	hotSpot->paint = true;
+	hotSpot->weight = 5;
 	std::vector<Node*> neighbours = GetNeighbours(hotSpot, grid1);
 	for (Node* neighbour : neighbours) {
-		if (!neighbour->blocked) {
-			neighbour->outlineColor = ORANGE;
+		if (!neighbour->blocked&&!neighbour->paint) {
+			neighbour->weight = 5;
+			neighbour->fillColor = Color{ 255,165,0,100 };
+			neighbour->paint = true;
 		}
 
 	}

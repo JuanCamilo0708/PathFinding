@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -130,8 +130,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Ai+AStar.cpp" />
     <ClCompile Include="Ai+BFS.cpp" />
     <ClCompile Include="Ai+DFS.cpp" />
+    <ClCompile Include="Ai+Djikstra.cpp" />
     <ClCompile Include="Ai.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

@@ -47,8 +47,24 @@ public:
 	bool animateDFS = false;
 	bool animateDFSVisited = false;
 	float dfsTimer = 0.0f;
-	void Djikstre(Node* startNode, Node* endNode);
+	void Djikstra(Node* startNode, Node* endNode);
+	std::vector<Node*> djikstraPath;
+	std::vector<Node*> djikstraVisited;
+	Color djikstraColor;
+	int djikstraIndex = 0;
+	int djikstraVisitedIndex = 0;
+	bool animateDjikstra = false;
+	bool animateDjikstraVisited = false;
+	float djikstraTimer = 0.0f;
 	void AStar(Node* startNode, Node* endNode);
+	std::vector<Node*> aStarPath;
+	std::vector<Node*> aStarVisited;
+	Color aStarColor;
+	int aStarIndex = 0;
+	int aStarVisitedIndex = 0;
+	bool animateAStar = false;
+	bool animateAStarVisited = false;
+	float aStarTimer = 0.0f;
 
 	void RandomSearch(Node* startNode, Node* endNode);
 

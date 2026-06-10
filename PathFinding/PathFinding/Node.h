@@ -2,6 +2,7 @@
 #pragma once
 #include "raylib.h"
 #include <string>
+#include <float.h>
 struct Node {
 	int row, col;
 	Vector2 position;
@@ -16,6 +17,12 @@ struct Node {
 	int step = 0;
 	float scale = 1.0;
 	bool animating = false;
+	//for djikstra
+	float gCost = FLT_MAX;
+	//for A*
+	float hCost = 0;
+	float fCost = FLT_MAX;
+
 	void DrawRectangleLinesV(Vector2 position, Vector2 size, Color color) {
 		DrawRectangleLines(position.x, position.y, size.x, size.y, color);
 	}
@@ -80,6 +87,9 @@ struct Node {
 		if (displayText != "S" && displayText != "E") {
 			displayText = "";
 		}
+		gCost = FLT_MAX;
+		hCost = 0;
+		fCost = FLT_MAX;
 
 	}
 	void Reset() {
@@ -90,6 +100,7 @@ struct Node {
 		visited = false;
 		parent = nullptr;
 		step = 0;
+		weight = 1;
 	}
 
 

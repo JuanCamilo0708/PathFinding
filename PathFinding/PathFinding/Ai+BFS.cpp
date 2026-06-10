@@ -6,7 +6,7 @@ bool Ai::BFS(Node* startNode, Node* endNode)
 	bfsPath.clear();
 	bfsVisited.clear();
 	bfsColor = Color{ 0,200,0,100};
-	for (auto& gridRow : grid1) {
+	for (auto& gridRow : grid2) {
 		for (auto& node : gridRow) {
 			node.Laundry();
 		}
@@ -26,7 +26,7 @@ bool Ai::BFS(Node* startNode, Node* endNode)
 			std::cout << "A path was found" << std::endl;
 			return true;
 		}
-		for (Node* neighbour : GetNeighbours(currentNode, grid1)) {
+		for (Node* neighbour : GetNeighbours(currentNode, grid2)) {
 			if (neighbour->blocked || neighbour->visited) continue;
 			neighbour->step = currentNode->step + 1;
 			neighbour->parent = currentNode;
